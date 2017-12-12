@@ -299,7 +299,8 @@ void draw(Letter myletter) {
 }
 
 bool isBottomYet(Letter myletter){
-    if (myletter.x == 0)
+    int pageNumber = myletter.y / 8;
+    if (myletter.x == 0 | game[pageNumber * 128 + myletter.x - 1] > 0)
     {
         return 1;
     } else return 0;

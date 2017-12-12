@@ -6,7 +6,7 @@
 #include "sound.h"
 #include "freqmap.h"
 
-#define GAME_SPEED          200
+#define GAME_SPEED          800
 #define GAME_WIN_SCORE      3
 #define MAX_X               128
 #define MAX_Y               32
@@ -26,6 +26,7 @@ int gameState = STATE_PONG;
 int menuState = MENU_MULTI;
 
 Letter letterO;
+Letter letterI;
 
 /*
  * One frame of the game
@@ -36,12 +37,37 @@ void advance() {
     if (letterO.x >= 0)
     {
         letterO.x = (letterO.x - letterO.speedX);
+
+        //if BTN2 pressed, move letter to right
+        if (getbtns() & 1) // btnStatus is 0010. BTN2 is pressed
+        {
+            if (letterO.y + letterO.speedY <=24)
+            {
+                letterO.y = (letterO.y + letterO.speedY);
+            }
+        }
+
+        //BTN3 pressed
+        if (getbtns() & 2) //0100, BTN3 pressed
+        {
+            if (letterO.y - letterO.speedY >= 0)
+            {
+                letterO.y = (letterO.y - letterO.speedY);
+            }
+        }
+
+
+        draw(letterO);
+
     } else return;
 
     if (isBottomYet(letterO))
     {
         saveGame();
         PORTE = 0xff;
+        letterO.x = 80;
+        letterO.y =  16;
+        draw(letterO);
         delayAssembly(3000);
     }
 
@@ -79,10 +105,10 @@ void advance() {
  * Set up game configuration
  */
 void init_game() {
-    letterO.x = 20;
-    letterO.y = 20;
-    letterO.speedX = 2;
-    letterO.speedY = 0;    
+    letterO.x = 80;
+    letterO.y = 16;
+    letterO.speedX = 8;
+    letterO.speedY = 8;    
 }
 
 int tuneCount = 1;
@@ -251,6 +277,16 @@ int targetCoord = 0;
 //             }
 //     }
 // }
+
+
+int getbtns(void)
+{
+    //The buttons BTN4, BTN3, and BTN2, are connected to bits 7, 6 and 5 of Port D.
+    // int btnStatus = PORTD >> 5;
+    //mask all other bits ...0111 = 0x7
+    return (PORTD >> 5) & 0x7;
+}
+
 
 /**
  * ISR Interrupt handler for timer 2
