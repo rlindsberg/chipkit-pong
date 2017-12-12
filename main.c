@@ -36,13 +36,13 @@ void advance() {
     if (letterO.enabled == 1)
     {
         PORTE = 0x20;
-        delay(2000000);
+        // delay(2000000);
     }
 
     if (letterI.enabled == 1)
     {
         // PORTE = 0xAA;
-        delay(2000000);
+        // delay(2000000);
     }
 
 
@@ -71,7 +71,7 @@ void advance() {
         }
 
         PORTE = 0x8;
-        delay(2000000);
+        // delay(2000000);
         draw(letterO, letterI);
 
     //Letter I
@@ -83,7 +83,7 @@ void advance() {
         //if BTN2 pressed, move letter to right
         if (getbtns() & 1) // btnStatus is 0010. BTN2 is pressed
         {
-            if (letterI.y + letterI.speedY <=24)
+            if (letterI.y + letterI.speedY <=16)
             {
                 letterI.y = (letterI.y + letterI.speedY);
             }
@@ -99,7 +99,7 @@ void advance() {
         }
 
         PORTE = 0x8; //1000
-        delay(2000000);
+        // delay(2000000);
         draw(letterO, letterI);
 
     }
@@ -140,12 +140,14 @@ void advance() {
 void init_game() {
     letterO.x = 8;
     letterO.y = 16;
+    letterO.width = 8;
     letterO.speedX = 8;
     letterO.speedY = 8;
     letterO.enabled = 1;
 
     letterI.x = 80;
     letterI.y = 8;
+    letterI.width = 16;
     letterI.speedX = 8;
     letterI.speedY = 8;
     letterI.enabled = 0;
@@ -376,23 +378,23 @@ void timer2_interrupt_handler(void) {
             //draw new letter
 
             PORTE = 0x1;
-            delay(2000000);
+            // delay(2000000);
 
             ////check letter status
             if (letterO.enabled == 1)
             {
                 PORTE = 0x20; //0010 0000
-                delay(2000000);
+                // delay(2000000);
             }
             if (letterI.enabled == 1)
             {
                 PORTE = 0x10; //0001 0000
-                delay(2000000);
+                // delay(2000000);
             }
             ////
 
             PORTE = 0x2;
-            delay(2000000);
+            // delay(2000000);
             draw(letterO, letterI);
 
 
@@ -400,17 +402,17 @@ void timer2_interrupt_handler(void) {
             if (letterO.enabled == 1)
             {
                 PORTE = 0x20; //0010 0000
-                delay(2000000);
+                // delay(2000000);
             }
             if (letterI.enabled == 1)
             {
                 PORTE = 0x10; //0001 0000
-                delay(2000000);
+                // delay(2000000);
             }
             ////
 
             PORTE = 0x7;
-            delay(2000000);
+            // delay(2000000);
             advance();
 
             // letterI.enabled = 1;

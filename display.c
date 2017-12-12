@@ -132,10 +132,10 @@ void drawLetterO(Letter l){
     int i;
     for (i = 0; i < sizeof(game); i++) { game[i] = savedGame[i]; }
     PORTE = 0x4; //0100
-    delay(2000000);
+    // delay(2000000);
 
 
-    for (i = 0; i < 8; i++)
+    for (i = 0; i < l.width; i++)
     {
     lightUpPixel(l.x+i, l.y);
     lightUpPixel(l.x+i, l.y+1);
@@ -147,30 +147,28 @@ void drawLetterO(Letter l){
     lightUpPixel(l.x+i, l.y+7);
     }
     PORTE = 0x05;
-    delay(2000000);
+    // delay(2000000);
 }
 
 void drawLetterI(Letter l){
     int i;
     for (i = 0; i < sizeof(game); i++) { game[i] = savedGame[i]; }
     PORTE = 0x4; //0100
-    delay(2000000);
+    // delay(2000000);
 
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < l.width; i++)
     {
-    lightUpPixel(l.x+i, l.y);
-    lightUpPixel(l.x+i, l.y+1);
-    lightUpPixel(l.x+i, l.y+2);
-    lightUpPixel(l.x+i, l.y+3);
-    lightUpPixel(l.x+i, l.y+4);
-    lightUpPixel(l.x+i, l.y+5);
-    lightUpPixel(l.x+i, l.y+6);
-    lightUpPixel(l.x+i, l.y+7);
+    lightUpPixel(l.x, l.y+i);
+    lightUpPixel(l.x+1, l.y+i);
+    lightUpPixel(l.x+2, l.y+i);
+    lightUpPixel(l.x+3, l.y+i);
+    lightUpPixel(l.x+4, l.y+i);
+    lightUpPixel(l.x+5, l.y+i);
+    lightUpPixel(l.x+6, l.y+i);
+    lightUpPixel(l.x+7, l.y+i);
     }
-    
     PORTE = 0x05;
-    delay(2000000);
-
+    // delay(2000000);
 }
 
 /*
@@ -320,7 +318,7 @@ void draw(Letter myletterO, Letter myletterI) {
     // drawScore(p1, p2);
 
     PORTE = 0x3;
-    delay(2000000);
+    // delay(2000000);
 
     if (myletterO.enabled)
     {
@@ -332,11 +330,17 @@ void draw(Letter myletterO, Letter myletterI) {
 
     renderScreen(game);
     PORTE = 0x6;
-    delay(2000000);
+    // delay(2000000);
 }
 
 bool isBottomYet(Letter myletter){
     int pageNumber = myletter.y / 8;
+    if (myletter.x == 0 | game[pageNumber * 128 + myletter.x - 1] > 0)
+    {
+        return 1;
+    }
+
+    pageNumber = pageNumber + myletter.width / 8 - 1;
     if (myletter.x == 0 | game[pageNumber * 128 + myletter.x - 1] > 0)
     {
         return 1;
