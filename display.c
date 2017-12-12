@@ -168,17 +168,6 @@ void drawLetterI(Letter l){
     lightUpPixel(l.x+7, l.y+i);
     }
 
-    for (i = 0; i < 8; i++)
-    {
-    lightUpPixel(l.x+8, l.y+i+8);
-    lightUpPixel(l.x+1+8, l.y+i+8);
-    lightUpPixel(l.x+2+8, l.y+i+8);
-    lightUpPixel(l.x+3+8, l.y+i+8);
-    lightUpPixel(l.x+4+8, l.y+i+8);
-    lightUpPixel(l.x+5+8, l.y+i+8);
-    lightUpPixel(l.x+6+8, l.y+i+8);
-    lightUpPixel(l.x+7+8, l.y+i+8);
-    }
     PORTE = 0x05;
     delay(500000);
 }

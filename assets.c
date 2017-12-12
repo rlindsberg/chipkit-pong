@@ -132,14 +132,3 @@ const uint8_t const font[] = {
     0, 0, 4, 2, 4, 2, 0, 0,
     0, 120, 68, 66, 68, 120, 0, 0,
 };
-
-
-// const short const menuLength = 9;
-// const uint8_t const menu[3][13] = {
-//     {'1', '-', 'P', 'L', 'A', 'Y', 'E', 'R', ' '},
-//     {'2', '-', 'P', 'L', 'A', 'Y', 'E', 'R', 'S'},
-//     {'T', 'r', 'a', 'i', 'n', 'i', 'n', 'g', ' '}
-// };
-
-
-

@@ -3,27 +3,15 @@
 #include "helpers.h"
 #include "assets.h"
 #include "display.h"
-// #include "sound.h"
-// #include "freqmap.h"
 
 #define GAME_SPEED          800
-// #define GAME_WIN_SCORE      3 //uless
-// #define MAX_X               128 //uless
-// #define MAX_Y               32 //uless
-// #define PADDLE_HEIGHT       8 //uless
 #define CONTROLLER_SPEED    40
 
-#define STATE_START     0
-#define STATE_PONG      1
-#define STATE_END       2
-#define STATE_MENU      3
+#define STATE_INGAME    0
+#define STATE_OVER      1
 
-// #define MENU_MULTI      1 //uless
-// #define MENU_CPUBAS     0 //uless
-// #define MENU_CPUADV     2 //uless
+int gameState = STATE_INGAME;
 
-int gameState = STATE_PONG;
-// int menuState = MENU_MULTI;
 
 Letter letterO;
 Letter letterI;
@@ -31,7 +19,7 @@ Letter letterI;
 /*
  * One frame of the game
  */
-void advance() {
+void inGame() {
 
     if (letterO.enabled == 1)
     {
@@ -44,7 +32,6 @@ void advance() {
         // PORTE = 0xAA;
         delay(500000);
     }
-
 
 
     //letter O
@@ -172,12 +159,6 @@ void advance() {
         delay(500000);
     }
 
-
-
-
-
-
-
         
         } else {
 
@@ -237,31 +218,11 @@ void init_game() {
 
     letterI.x = 80;
     letterI.y = 8;
-    letterI.width = 24;
+    letterI.width = 16;
     letterI.speedX = 8;
     letterI.speedY = 8;
     letterI.enabled = 0;
 }
-
-int tuneCount = 1;
-int tuneScale = 0;
-// /*
-//  * Plays a single note. Call repetitively for
-//  * music sequences.
-//  */
-// void playTune(int tune[], int tempo, int toneVolume) {
-//     tone(tune[tuneCount], toneVolume);
-    
-//     if (tune[tuneCount] == 0) {
-//         tuneScale = tempo - 1;
-//     }
-    
-//     tuneScale++;
-//     if (tuneScale == tempo) {
-//         tuneScale = 0;
-//         tuneCount = (tuneCount + 1) % tune[0];
-//     }
-// }
 
 /*
  * Initialise
@@ -286,41 +247,6 @@ int main(void) {
 
 int counter = GAME_SPEED;
 
-// /**
-//  * Linear mapping from [0,1023] to valid paddle position
-//  */
-// int translateToScreen(int val) {
-//     return val > 0 ? ((MAX_Y - PADDLE_HEIGHT) * val) / 1024 : 0;
-// }
-
-
-
-// /**
-//  * Maps the master potentiometer position to
-//  * to one of the three menu items
-//  */
-// void updateMenu() {
-//     int ADCValueP1;
-
-//     // start sampling and wait to complete
-//     IFSCLR(1) = 0x0002;
-//     AD1CON1SET = 0x0004;
-//     while (!IFS(1) & 0x0002);
-    
-//     // check which buffer to read from
-//     if (AD1CON2 & 0x0080) {
-//         ADCValueP1 = ADC1BUF0;
-//     } else {
-//         ADCValueP1 = ADC1BUF8;
-//     }
-
-//     menuState = ((3 * ADCValueP1) / 1024);
-// }
-
-// int direction = 0;
-// int targetCoord = 0;
-
-
 
 int getbtns(void)
 {
@@ -340,37 +266,10 @@ void timer2_interrupt_handler(void) {
 
     if (counter != 0) { return; }
     counter = GAME_SPEED;
-    // updatePaddles();
-    // updateVolume();
-
+   
     switch (gameState) {
-        // case STATE_MENU:
-        //     updateMenu();
-        //     renderMenu(menuState);
-        //     playTune(FF7prelude, 2, volume);
-        //     if (isButtonPressed(4)) {
-        //         init_game();
-        //         gameState = STATE_PONG;
-        //         resetMusic();
-        //         draw(p1, p2, ball);
-        //     }
-        //     break;
 
-
-
-        case STATE_PONG:
-            // // cpu player movement
-            // if (menuState == MENU_CPUBAS || menuState == MENU_CPUADV) {
-            //     updateCpuPlayer();
-            // }
-
-            // check for game abort
-            // if (isButtonPressed(4)) {
-            //     gameState = STATE_MENU;
-            //     resetMusic();
-            //     renderMenu(menuState);
-            // }
-
+        case STATE_INGAME:
             //draw new letter
 
             PORTE = 0x1;
@@ -387,7 +286,7 @@ void timer2_interrupt_handler(void) {
                 PORTE = 0x10; //0001 0000
                 delay(500000);
             }
-            ////
+            ////end
 
             PORTE = 0x2;
             delay(500000);
@@ -405,52 +304,26 @@ void timer2_interrupt_handler(void) {
                 PORTE = 0x10; //0001 0000
                 delay(500000);
             }
-            ////
+            ////end
 
             PORTE = 0x7;
             delay(500000);
-            advance();
-
-            // letterI.enabled = 1;
-            // draw(letterO, letterI);
-            // advance();
-
-
-
-
-
-
-
-
-
-
-
-
+            inGame();
 
 
             PORTE = 0xf;
             // game end?
-            // if (p1.score >= GAME_WIN_SCORE || p2.score >= GAME_WIN_SCORE) {
-            //     gameState = STATE_END;
-            //     drawEnding(p1, p2);
+            // if (isGameOver) {
+            //     gameState = STATE_OVER;
+            //     drawScore();
             // }
             break;
 
 
-        // case STATE_START:
-        //     playTune(FF7prelude, 2, volume);
-        //     if (isButtonPressed(4)) {
-        //         gameState = STATE_MENU;
-        //         renderMenu(menuState);
-        //     }
-        //     break;
-
-        // case STATE_END:
-        //     playTune(FF7fanfare, 2, volume);
-        //     if (isButtonPressed(4)) {
-        //         gameState = STATE_START;
-        //         resetMusic();
-        //         drawLogo();
+        // case STATE_OVER:
+        //     
+        //     if (??) {
+        //         gameState = STATE_INGAME;
         //     }
         //     break;
     }
