@@ -19,6 +19,6 @@ void clearGame();
 void saveGame();
 
 void drawScore(Paddle p1, Paddle p2);
-void draw(Letter myletter);
+void draw(Letter myletterO, Letter myletterI);
 
 #endif // DISPLAY_H_

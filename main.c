@@ -33,8 +33,22 @@ Letter letterI;
  */
 void advance() {
 
-    //letter is moving
-    if (letterO.x >= 0)
+    if (letterO.enabled == 1)
+    {
+        PORTE = 0x20;
+        delay(2000000);
+    }
+
+    if (letterI.enabled == 1)
+    {
+        // PORTE = 0xAA;
+        delay(2000000);
+    }
+
+
+
+    //letter O
+    if (letterO.enabled == 1 && letterO.x >= 0)
     {
         letterO.x = (letterO.x - letterO.speedX);
 
@@ -56,48 +70,67 @@ void advance() {
             }
         }
 
+        PORTE = 0x8;
+        delay(2000000);
+        draw(letterO, letterI);
 
-        draw(letterO);
-
-    } else return;
-
-    if (isBottomYet(letterO))
+    //Letter I
+    } else if (letterI.enabled == 1 && letterI.x >= 0)
     {
-        saveGame();
-        PORTE = 0xff;
-        letterO.x = 80;
-        letterO.y =  16;
-        draw(letterO);
-        delayAssembly(3000);
+        letterI.x = (letterI.x - letterI.speedX);
+
+
+        //if BTN2 pressed, move letter to right
+        if (getbtns() & 1) // btnStatus is 0010. BTN2 is pressed
+        {
+            if (letterI.y + letterI.speedY <=24)
+            {
+                letterI.y = (letterI.y + letterI.speedY);
+            }
+        }
+
+        //BTN3 pressed
+        if (getbtns() & 2) //0100, BTN3 pressed
+        {
+            if (letterI.y - letterI.speedY >= 0)
+            {
+                letterI.y = (letterI.y - letterI.speedY);
+            }
+        }
+
+        PORTE = 0x8; //1000
+        delay(2000000);
+        draw(letterO, letterI);
+
     }
 
-    // ball.x = (ball.x + ball.speedX);
-    // ball.y = (ball.y + ball.speedY);
+    // checks if the letter falls to the bottom
+    if (letterO.enabled == 1 && isBottomYet(letterO))
+    {
+        PORTE = 0x9; //1001
+        saveGame();
+        
 
-    // // vertical collision detection
-    // if (ball.y <= 0) {
-    //     ball.y = 0;
-    //     ball.speedY *= (-1);
-    // }else if (ball.y >= MAX_Y - 1) {
-    //     ball.y = MAX_Y - 1;
-    //     ball.speedY *= (-1);
-    // }
+        letterO.x = 80;
+        letterO.y =  16;
+        letterO.enabled = 0;
+        letterI.enabled = 1;
 
-    // // horizontal collision detection
-    // if (ball.x <= 0) {
-    //     // score for p1?
-    //     if (ball.y < p1.y || ball.y > p1.y + PADDLE_HEIGHT - 1) { p2.score += 1; }
+        PORTE = 0xB; //1011
+    }
+    if (letterI.enabled == 1 && isBottomYet(letterI))
+    {
+        PORTE = 0x9; //1001
+        saveGame();
+        
 
-    //     ball.x = 0;
-    //     ball.speedX *= (-1);
-    // }else if (ball.x >= MAX_X - 1) {
-    //     // score for p1?
-    //     if (ball.y < p2.y || ball.y > p2.y + PADDLE_HEIGHT - 1) { p1.score += 1; }
+        letterI.x = 80;
+        letterI.y =  16;
+        letterI.enabled = 0;
+        letterO.enabled = 1;
 
-    //     ball.x = MAX_X - 1;
-    //     ball.speedX *= (-1);
-    // }
-
+        PORTE = 0xB; //1011
+    }
 
 }
 
@@ -105,10 +138,17 @@ void advance() {
  * Set up game configuration
  */
 void init_game() {
-    letterO.x = 80;
+    letterO.x = 8;
     letterO.y = 16;
     letterO.speedX = 8;
-    letterO.speedY = 8;    
+    letterO.speedY = 8;
+    letterO.enabled = 1;
+
+    letterI.x = 80;
+    letterI.y = 8;
+    letterI.speedX = 8;
+    letterI.speedY = 8;
+    letterI.enabled = 0;
 }
 
 int tuneCount = 1;
@@ -138,7 +178,7 @@ int main(void) {
     spi_init();
     display_wakeup();
 
-    drawLogo();
+    // drawLogo();
     init_game();
 
     // setup hardware
@@ -335,11 +375,48 @@ void timer2_interrupt_handler(void) {
 
             //draw new letter
 
-            draw(letterO);
+            PORTE = 0x1;
+            delay(2000000);
 
+            ////check letter status
+            if (letterO.enabled == 1)
+            {
+                PORTE = 0x20; //0010 0000
+                delay(2000000);
+            }
+            if (letterI.enabled == 1)
+            {
+                PORTE = 0x10; //0001 0000
+                delay(2000000);
+            }
+            ////
+
+            PORTE = 0x2;
+            delay(2000000);
+            draw(letterO, letterI);
+
+
+            ////check letter status
+            if (letterO.enabled == 1)
+            {
+                PORTE = 0x20; //0010 0000
+                delay(2000000);
+            }
+            if (letterI.enabled == 1)
+            {
+                PORTE = 0x10; //0001 0000
+                delay(2000000);
+            }
+            ////
+
+            PORTE = 0x7;
+            delay(2000000);
             advance();
 
-            PORTE ++;
+            // letterI.enabled = 1;
+            // draw(letterO, letterI);
+            // advance();
+
 
 
 
