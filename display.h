@@ -13,7 +13,7 @@ void lightUpPixel(int x, int y);
 
 void drawLetterO(Letter myletter);
 void drawLetterI(Letter myletter);
-void letterSpeedy(Letter myletter, Letter myOtherLetter);
+Letter dropFastly(Letter myletter, Letter myOtherLetter);
 
 void clearGame();
 void saveGame();

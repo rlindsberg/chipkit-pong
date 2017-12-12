@@ -290,6 +290,109 @@ bool isBottomYet(Letter myletter){
 }
 
 
+Letter dropFastly(Letter myletter, Letter myOtherLetter) //myletter is enabled, myOtherLetter is disabled
+{
+
+        PORTE = 0xC; //1100
+        delay(500000);
+
+        Letter myletterCopy = myletter;
+        myletterCopy.x = myletterCopy.x - 3 * myletterCopy.speedX;
+
+        if (myletterCopy.x >= 0 && isBottomYet(myletterCopy) == 0) //safe to drop down fastly
+        {
+            myletter.x = myletter.x - 3 * myletter.speedX;
+            return myletter;
+
+        } else
+        {
+            myletterCopy.x = myletterCopy.x - 2 * myletterCopy.speedX;
+            if (myletterCopy.x >= 0 && isBottomYet(myletterCopy) == 0) //safe to drop down fastly
+            {
+                myletter.x = myletter.x - 2 * myletter.speedX;
+                return myletter;
+            } else {return myletter;}
+        }
+
+
+
+
+
+
+        // if (myletter.x - letterO.speedX >= 0)
+        // {
+        //     PORTE = 0x0;
+        //     delay(500000);
+        //     letterO.x = (letterO.x - 24);
+        // }
+
+        // PORTE = 0xD; //1101
+        // delay(500000);
+
+        // draw(letterO, letterI);
+    
+        // PORTE = 0xE;
+        // if (isBottomYet(letterO))
+        // {
+        //     PORTE = 0x9; //1001
+        //     delay(500000);
+        //     saveGame();
+        //     clearScreenRow();
+
+        //     letterO.x = 80;
+        //     letterO.y =  16;
+        //     letterO.enabled = 0;
+        //     letterI.enabled = 1;
+
+        //     PORTE = 0xB; //1011
+        //     delay(500000);
+        // }
+
+        
+        // } else {
+
+
+
+        //     PORTE = 0xC; //1100
+        //     delay(500000);
+
+        //     draw(letterI, letterO);
+
+        //     if (letterI.x - letterI.speedX >= 0)
+        //     {
+        //         PORTE = 0x0;
+        //         delay(500000);
+        //         letterI.x = (letterI.x - 16);
+        //     }
+
+        //     PORTE = 0xD; //1101
+        //     delay(500000);
+
+        //     draw(letterI, letterO);
+        
+        //     PORTE = 0xE;
+        //     if (isBottomYet(letterI))
+        //     {
+        //         PORTE = 0x9; //1001
+        //         delay(500000);
+        //         saveGame();
+        //         clearScreenRow();
+
+        //         letterI.x = 80;
+        //         letterI.y =  16;
+        //         letterI.enabled = 0;
+        //         letterO.enabled = 1;
+
+        //         PORTE = 0xB; //1011
+        //         delay(500000);
+        //      }
+
+
+        // }
+
+
+} //end dropFastly
+
 int checkPage(int col)
 {
     int i;
