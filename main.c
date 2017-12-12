@@ -6,7 +6,7 @@
 #include "sound.h"
 #include "freqmap.h"
 
-#define GAME_SPEED          100
+#define GAME_SPEED          200
 #define GAME_WIN_SCORE      3
 #define MAX_X               128
 #define MAX_Y               32
@@ -22,60 +22,67 @@
 #define MENU_CPUBAS     0
 #define MENU_CPUADV     2
 
-int gameState = STATE_START;
+int gameState = STATE_PONG;
 int menuState = MENU_MULTI;
-int volume = 2;
-Paddle p1, p2;
-Ball ball;
+
+Letter letterO;
 
 /*
  * One frame of the game
  */
 void advance() {
-    ball.x = (ball.x + ball.speedX);
-    ball.y = (ball.y + ball.speedY);
 
-    // vertical collision detection
-    if (ball.y <= 0) {
-        ball.y = 0;
-        ball.speedY *= (-1);
-    }else if (ball.y >= MAX_Y - 1) {
-        ball.y = MAX_Y - 1;
-        ball.speedY *= (-1);
+    //letter is moving
+    if (letterO.x >= 0)
+    {
+        letterO.x = (letterO.x - letterO.speedX);
+    } else return;
+
+    if (isBottomYet(letterO))
+    {
+        saveGame();
+        PORTE = 0xff;
+        delayAssembly(3000);
     }
 
-    // horizontal collision detection
-    if (ball.x <= 0) {
-        // score for p1?
-        if (ball.y < p1.y || ball.y > p1.y + PADDLE_HEIGHT - 1) { p2.score += 1; }
+    // ball.x = (ball.x + ball.speedX);
+    // ball.y = (ball.y + ball.speedY);
 
-        ball.x = 0;
-        ball.speedX *= (-1);
-    }else if (ball.x >= MAX_X - 1) {
-        // score for p1?
-        if (ball.y < p2.y || ball.y > p2.y + PADDLE_HEIGHT - 1) { p1.score += 1; }
+    // // vertical collision detection
+    // if (ball.y <= 0) {
+    //     ball.y = 0;
+    //     ball.speedY *= (-1);
+    // }else if (ball.y >= MAX_Y - 1) {
+    //     ball.y = MAX_Y - 1;
+    //     ball.speedY *= (-1);
+    // }
 
-        ball.x = MAX_X - 1;
-        ball.speedX *= (-1);
-    }
+    // // horizontal collision detection
+    // if (ball.x <= 0) {
+    //     // score for p1?
+    //     if (ball.y < p1.y || ball.y > p1.y + PADDLE_HEIGHT - 1) { p2.score += 1; }
+
+    //     ball.x = 0;
+    //     ball.speedX *= (-1);
+    // }else if (ball.x >= MAX_X - 1) {
+    //     // score for p1?
+    //     if (ball.y < p2.y || ball.y > p2.y + PADDLE_HEIGHT - 1) { p1.score += 1; }
+
+    //     ball.x = MAX_X - 1;
+    //     ball.speedX *= (-1);
+    // }
+
+
 }
 
 /*
  * Set up game configuration
  */
 void init_game() {
-    p1.x = 0;
-    p1.y = 12;
-    p1.score = 0;
-
-    p2.x = 127;
-    p2.y = 23;
-    p2.score = 0;
-
-    ball.x = 61;
-    ball.y = 15;
-    ball.speedX = 2;
-    ball.speedY = 1;    
+    letterO.x = 20;
+    letterO.y = 20;
+    letterO.speedX = 2;
+    letterO.speedY = 0;    
 }
 
 int tuneCount = 1;
@@ -130,47 +137,47 @@ int translateToScreen(int val) {
     return val > 0 ? ((MAX_Y - PADDLE_HEIGHT) * val) / 1024 : 0;
 }
 
-void updatePaddles() {
-    int ADCValueP1, ADCValueP2;
+// void updatePaddles() {
+//     int ADCValueP1, ADCValueP2;
 
-    // start sampling and wait to complete
-    IFSCLR(1) = 0x0002;
-    AD1CON1SET = 0x0004;
-    while (!IFS(1) & 0x0002);
+//     // start sampling and wait to complete
+//     IFSCLR(1) = 0x0002;
+//     AD1CON1SET = 0x0004;
+//     while (!IFS(1) & 0x0002);
     
-    // check which buffer to read from
-    if (AD1CON2 & 0x0080) {
-        ADCValueP1 = ADC1BUF0;
-        ADCValueP2 = ADC1BUF1;
-    } else {
-        ADCValueP1 = ADC1BUF8;
-        ADCValueP2 = ADC1BUF9;
-    }
+//     // check which buffer to read from
+//     if (AD1CON2 & 0x0080) {
+//         ADCValueP1 = ADC1BUF0;
+//         ADCValueP2 = ADC1BUF1;
+//     } else {
+//         ADCValueP1 = ADC1BUF8;
+//         ADCValueP2 = ADC1BUF9;
+//     }
 
-    p1.y = translateToScreen(ADCValueP1);
-    if (menuState == MENU_MULTI) {
-        p2.y = translateToScreen(ADCValueP2);
-    }
-}
+//     p1.y = translateToScreen(ADCValueP1);
+//     if (menuState == MENU_MULTI) {
+//         p2.y = translateToScreen(ADCValueP2);
+//     }
+// }
 
 /**
  * Increases (BTN3) or decreases (BTN2) music volume
  */
-void updateVolume() {
-    if (isButtonPressed(3) && (volume + 100 <= 800)) {
-        volume += 100;
-    } else if (isButtonPressed(2) && (volume - 100 >= 2)) {
-        volume -= 100;
-    }
-}
+// void updateVolume() {
+//     if (isButtonPressed(3) && (volume + 100 <= 800)) {
+//         volume += 100;
+//     } else if (isButtonPressed(2) && (volume - 100 >= 2)) {
+//         volume -= 100;
+//     }
+// }
 
-/**
- * Resets music 
- */
-void resetMusic() {
-    tuneCount = 1;
-    mute();
-}
+// /**
+//  * Resets music 
+//  */
+// void resetMusic() {
+//     tuneCount = 1;
+//     mute();
+// }
 
 /**
  * Maps the master potentiometer position to
@@ -199,51 +206,51 @@ int targetCoord = 0;
 /**
  *  Generate a CPU player at two levels: basic and advanced (always correct)
  */
-void updateCpuPlayer() {
-    int offset, side, estimate, max;
-    max = MAX_Y - PADDLE_HEIGHT;
-    switch(menuState) {
-        case MENU_CPUBAS:
-            if (ball.y == 0) {
-                direction = 1;
-            } else if (ball.y == MAX_Y - 1) {
-                direction = -1;
-            }
+// void updateCpuPlayer() {
+//     int offset, side, estimate, max;
+//     max = MAX_Y - PADDLE_HEIGHT;
+//     switch(menuState) {
+//         case MENU_CPUBAS:
+//             if (ball.y == 0) {
+//                 direction = 1;
+//             } else if (ball.y == MAX_Y - 1) {
+//                 direction = -1;
+//             }
 
-            if (direction == 1 && p2.y < 23 && ball.x > 100) {
-                p2.y++;
-            } else if (direction == -1 && p2.y > 0 && ball.x > 100) {
-                p2.y--;
-            }
-            break;
+//             if (direction == 1 && p2.y < 23 && ball.x > 100) {
+//                 p2.y++;
+//             } else if (direction == -1 && p2.y > 0 && ball.x > 100) {
+//                 p2.y--;
+//             }
+//             break;
 
-        case MENU_CPUADV:
-            if (ball.x == 63 && ball.speedX > 0) {
-                targetCoord = MAX_Y - 1 - ball.y;
-            } else if (ball.x == 64 && ball.speedX > 0) {
-                targetCoord = MAX_Y - 1 - (ball.y - (direction));
-            }
+//         case MENU_CPUADV:
+//             if (ball.x == 63 && ball.speedX > 0) {
+//                 targetCoord = MAX_Y - 1 - ball.y;
+//             } else if (ball.x == 64 && ball.speedX > 0) {
+//                 targetCoord = MAX_Y - 1 - (ball.y - (direction));
+//             }
             
-            if (p2.y < 23 && p2.y + 4 < targetCoord) {
-                p2.y++;
-            } else if (p2.y > 0 && p2.y + 4 > targetCoord) {
-                p2.y--;
-            }
-            break;
-        default:
-            // predict y position
-            offset = ball.y - (ball.speedX / ball.speedY) * ball.x;
-            side = ball.speedX > 0 ? MAX_X : 0;
-            estimate = (ball.speedX / ball.speedY) * side + offset;
+//             if (p2.y < 23 && p2.y + 4 < targetCoord) {
+//                 p2.y++;
+//             } else if (p2.y > 0 && p2.y + 4 > targetCoord) {
+//                 p2.y--;
+//             }
+//             break;
+//         default:
+//             // predict y position
+//             offset = ball.y - (ball.speedX / ball.speedY) * ball.x;
+//             side = ball.speedX > 0 ? MAX_X : 0;
+//             estimate = (ball.speedX / ball.speedY) * side + offset;
 
-            // move paddle
-            if (estimate > ball.y && p2.y < max) {
-                p2.y++;
-            }else if (estimate < ball.y && p2.y > 0) {
-                p2.y--;
-            }
-    }
-}
+//             // move paddle
+//             if (estimate > ball.y && p2.y < max) {
+//                 p2.y++;
+//             }else if (estimate < ball.y && p2.y > 0) {
+//                 p2.y--;
+//             }
+//     }
+// }
 
 /**
  * ISR Interrupt handler for timer 2
@@ -254,61 +261,87 @@ void timer2_interrupt_handler(void) {
 
     if (counter != 0) { return; }
     counter = GAME_SPEED;
-    updatePaddles();
-    updateVolume();
+    // updatePaddles();
+    // updateVolume();
 
     switch (gameState) {
-        case STATE_MENU:
-            updateMenu();
-            renderMenu(menuState);
-            playTune(FF7prelude, 2, volume);
-            if (isButtonPressed(4)) {
-                init_game();
-                gameState = STATE_PONG;
-                resetMusic();
-                draw(p1, p2, ball);
-            }
-            break;
-        case STATE_PONG:
-            advance();
+        // case STATE_MENU:
+        //     updateMenu();
+        //     renderMenu(menuState);
+        //     playTune(FF7prelude, 2, volume);
+        //     if (isButtonPressed(4)) {
+        //         init_game();
+        //         gameState = STATE_PONG;
+        //         resetMusic();
+        //         draw(p1, p2, ball);
+        //     }
+        //     break;
 
-            // cpu player movement
-            if (menuState == MENU_CPUBAS || menuState == MENU_CPUADV) {
-                updateCpuPlayer();
-            }
+
+
+        case STATE_PONG:
+
+
+
+            
+
+            // // cpu player movement
+            // if (menuState == MENU_CPUBAS || menuState == MENU_CPUADV) {
+            //     updateCpuPlayer();
+            // }
 
             // check for game abort
-            if (isButtonPressed(4)) {
-                gameState = STATE_MENU;
-                resetMusic();
-                renderMenu(menuState);
-            }
+            // if (isButtonPressed(4)) {
+            //     gameState = STATE_MENU;
+            //     resetMusic();
+            //     renderMenu(menuState);
+            // }
 
-            draw(p1, p2, ball);
-            playTune(symphony, 1, volume);
+            //draw new letter
+
+            draw(letterO);
+
+            advance();
+
+            PORTE ++;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             // game end?
-            if (p1.score >= GAME_WIN_SCORE || p2.score >= GAME_WIN_SCORE) {
-                gameState = STATE_END;
-                resetMusic();
-                drawEnding(p1, p2);
-            }
+            // if (p1.score >= GAME_WIN_SCORE || p2.score >= GAME_WIN_SCORE) {
+            //     gameState = STATE_END;
+            //     drawEnding(p1, p2);
+            // }
             break;
-        case STATE_START:
-            playTune(FF7prelude, 2, volume);
-            if (isButtonPressed(4)) {
-                gameState = STATE_MENU;
-                renderMenu(menuState);
-            }
-            break;
-        case STATE_END:
-            playTune(FF7fanfare, 2, volume);
-            if (isButtonPressed(4)) {
-                gameState = STATE_START;
-                resetMusic();
-                drawLogo();
-            }
-            break;
+
+
+        // case STATE_START:
+        //     playTune(FF7prelude, 2, volume);
+        //     if (isButtonPressed(4)) {
+        //         gameState = STATE_MENU;
+        //         renderMenu(menuState);
+        //     }
+        //     break;
+
+        // case STATE_END:
+        //     playTune(FF7fanfare, 2, volume);
+        //     if (isButtonPressed(4)) {
+        //         gameState = STATE_START;
+        //         resetMusic();
+        //         drawLogo();
+        //     }
+        //     break;
     }
 }
 

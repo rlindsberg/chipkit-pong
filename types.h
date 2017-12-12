@@ -15,4 +15,9 @@ typedef struct Ball {
     short x, y, speedX, speedY;
 } Ball;
 
+
+typedef struct Letter {
+    short x, y, speedX, speedY;
+} Letter;
+
 #endif // TYPES_H_

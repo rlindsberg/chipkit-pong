@@ -1,5 +1,5 @@
 #include "display.h"
-
+#include <stdbool.h>
 #include <stdint.h>
 #include <pic32mx.h>
 #include "assets.h"
@@ -21,6 +21,8 @@
 
 #define PADDLE_HEIGHT   8
 uint8_t game[128*4] = {0};
+uint8_t savedGame[128*4] = {0};
+
 
 /*
  * Simple delay
@@ -123,6 +125,31 @@ void lightUpPixel(int x, int y) {
     game[offset * 128 + x] |= 1 << (y - offset * 8);
 }
 
+
+void drawLetterO(Letter l){
+
+    //load game to screen
+    int i;
+    for (i = 0; i < sizeof(game); i++) { game[i] = savedGame[i]; }
+
+
+    for (i = 0; i < 8; i++)
+    {
+    lightUpPixel(l.x+i, l.y);
+    lightUpPixel(l.x+i, l.y+1);
+    lightUpPixel(l.x+i, l.y+2);
+    lightUpPixel(l.x+i, l.y+3);
+    lightUpPixel(l.x+i, l.y+4);
+    lightUpPixel(l.x+i, l.y+5);
+    lightUpPixel(l.x+i, l.y+6);
+    lightUpPixel(l.x+i, l.y+7);
+    }
+}
+
+void drawLetterI(Letter myletter){
+
+}
+
 /*
  * Draw paddle
  */
@@ -146,6 +173,11 @@ void drawBall(Ball b) {
 void clearGame() {
     int i;
     for (i = 0; i < sizeof(game); i++) { game[i] = 0; }
+}
+
+void saveGame(){
+    int i;
+    for (i = 0; i < sizeof(game); i++) { savedGame[i] = game[i]; }
 }
 
 /*
@@ -253,16 +285,24 @@ void renderMenu(int selected) {
 /*
  * Send the next frame to the display
  */
-void draw(Paddle p1, Paddle p2, Ball ball) {
+void draw(Letter myletter) {
     int i, j;
 
     clearGame();
-    drawPaddle(p1);
-    drawPaddle(p2);
-    drawBall(ball);
-    drawScore(p1, p2);
+    // drawPaddle(p1);
+    // drawPaddle(p2);
+    // drawBall(ball);
+    // drawScore(p1, p2);
     
+    drawLetterO(myletter);
     renderScreen(game);
+}
+
+bool isBottomYet(Letter myletter){
+    if (myletter.x == 0)
+    {
+        return 1;
+    } else return 0;
 }
 
 /*

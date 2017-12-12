@@ -11,8 +11,14 @@ void display_wakeup();
 void lightUpPixel(int x, int y);
 void drawPaddle(Paddle p);
 void drawBall(Ball b);
+
+void drawLetterO(Letter myletter);
+void drawLetterI(Letter myletter);
+
 void clearGame();
+void saveGame();
+
 void drawScore(Paddle p1, Paddle p2);
-void draw(Paddle p1, Paddle p2, Ball ball);
+void draw(Letter myletter);
 
 #endif // DISPLAY_H_
