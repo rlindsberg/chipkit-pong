@@ -7,10 +7,10 @@
 #define GAME_SPEED          800
 #define CONTROLLER_SPEED    40
 
-#define STATE_INGAME    0
-#define STATE_OVER      1
+#define STATE_GAMESTART    0
+#define STATE_GAMEOVER      1
 
-int gameState = STATE_INGAME;
+int gameState = STATE_GAMESTART;
 
 
 Letter letterO;
@@ -269,7 +269,7 @@ void timer2_interrupt_handler(void) {
    
     switch (gameState) {
 
-        case STATE_INGAME:
+        case STATE_GAMESTART:
             //draw new letter
 
             PORTE = 0x1;
@@ -312,20 +312,18 @@ void timer2_interrupt_handler(void) {
 
 
             PORTE = 0xf;
-            // game end?
-            // if (isGameOver) {
-            //     gameState = STATE_OVER;
-            //     drawScore();
-            // }
+
+
+            if (isGameOver(letterO, letterI) == 1) {
+                gameState = STATE_GAMEOVER;
+                PORTE = 0;
+                // drawScore();
+            }
             break;
 
 
-        // case STATE_OVER:
-        //     
-        //     if (??) {
-        //         gameState = STATE_INGAME;
-        //     }
-        //     break;
+        case STATE_GAMEOVER:
+            break;
     }
 }
 
