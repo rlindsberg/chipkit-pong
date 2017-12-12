@@ -17,6 +17,7 @@ void letterSpeedy(Letter myletter, Letter myOtherLetter);
 
 void clearGame();
 void saveGame();
+int  isGameOver(Letter myletter, Letter myOtherLetter);
 
 void draw(Letter myletterO, Letter myletterI);
 

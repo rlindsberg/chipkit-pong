@@ -360,6 +360,12 @@ void clearScreenRow()
 
 }
 
+int isGameOver(Letter myletter, Letter myOtherLetter){
+    if (savedGame[326] > 0)
+    {
+        return 1;
+    } else {return 0;}
+}
 
 // /*
 //  * Starting screen
