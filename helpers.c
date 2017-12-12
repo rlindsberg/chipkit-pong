@@ -29,22 +29,22 @@ int getButtonInput(void){
  * Returns if button was pressed and allows
  * pressing of any length.
  */
-int buttons[] = {0, 0, 0, 0, 0};
-int isButtonPressed(int i) {
-    int btnVal = getButtonInput();
-    int shift = (i > 1 && i < 5) ? (-2) + i : 0;
-    int pin = 0x1 << shift;
-    i--;
+// int buttons[] = {0, 0, 0, 0, 0};
+// int isButtonPressed(int i) {
+//     int btnVal = getButtonInput();
+//     int shift = (i > 1 && i < 5) ? (-2) + i : 0;
+//     int pin = 0x1 << shift;
+//     i--;
 
-    if (buttons[i] == 0 && btnVal & pin) {
-        buttons[i] = 1;
-        return 1;
-    }else if (buttons[i] == 1 && !(btnVal & pin)) {
-        buttons[i] = 0;
-    }
+//     if (buttons[i] == 0 && btnVal & pin) {
+//         buttons[i] = 1;
+//         return 1;
+//     }else if (buttons[i] == 1 && !(btnVal & pin)) {
+//         buttons[i] = 0;
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
 
 /**
  * Enables multi vector mode which allows

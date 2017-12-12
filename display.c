@@ -132,7 +132,7 @@ void drawLetterO(Letter l){
     int i;
     for (i = 0; i < sizeof(game); i++) { game[i] = savedGame[i]; }
     PORTE = 0x4; //0100
-    // delay(2000000);
+    delay(2000000);
 
 
     for (i = 0; i < l.width; i++)
@@ -147,14 +147,14 @@ void drawLetterO(Letter l){
     lightUpPixel(l.x+i, l.y+7);
     }
     PORTE = 0x05;
-    // delay(2000000);
+    delay(2000000);
 }
 
 void drawLetterI(Letter l){
     int i;
     for (i = 0; i < sizeof(game); i++) { game[i] = savedGame[i]; }
     PORTE = 0x4; //0100
-    // delay(2000000);
+    delay(2000000);
 
     for (i = 0; i < l.width; i++)
     {
@@ -168,7 +168,7 @@ void drawLetterI(Letter l){
     lightUpPixel(l.x+7, l.y+i);
     }
     PORTE = 0x05;
-    // delay(2000000);
+    delay(2000000);
 }
 
 /*
@@ -318,7 +318,7 @@ void draw(Letter myletterO, Letter myletterI) {
     // drawScore(p1, p2);
 
     PORTE = 0x3;
-    // delay(2000000);
+    delay(2000000);
 
     if (myletterO.enabled)
     {
@@ -330,7 +330,7 @@ void draw(Letter myletterO, Letter myletterI) {
 
     renderScreen(game);
     PORTE = 0x6;
-    // delay(2000000);
+    delay(2000000);
 }
 
 bool isBottomYet(Letter myletter){
@@ -343,9 +343,178 @@ bool isBottomYet(Letter myletter){
     pageNumber = pageNumber + myletter.width / 8 - 1;
     if (myletter.x == 0 | game[pageNumber * 128 + myletter.x - 1] > 0)
     {
+        // clearScreenRow();
         return 1;
     } else return 0;
 }
+
+
+int checkPage(int col)
+{
+    int i;
+    for (i = 0; i < 4; i++) //check pages
+    {
+        if (checkSegment(i, col) == 0)
+        {
+            return 0;
+
+        }
+    }
+    return 1;
+}
+
+int checkSegment(int i, int col)
+{
+    int j;
+    for(j = 0; j < 8; j++) //check segments
+    {
+        if (savedGame[i * 128 + col * 8 + j] != 0xFF) //not lighten
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+void clearScreenRow()
+{
+    int i, j, col, columnToClear; // total 15 columns, except the highist one
+    bool fullSegment = 0;
+    bool fullPage = 0;
+    bool fullColumn = 0;
+
+    bool checkNewColumn = 0;
+    for (col = 0; col < 15; col++) //check columns
+    {
+        if (checkPage(col) == 1)
+        {
+            fullColumn = 1;
+            columnToClear = col;
+            break;
+        }
+    }
+
+    if (fullColumn)
+    {
+        fullColumn = 0;
+        PORTE = 0xff;
+        delay(8000000);
+        //clear the column
+        for (i = 0; i < 4; i++) //check pages
+        {
+            for(j = 0; j < 8; j++) //check segments
+            {
+                savedGame[i * 128 + columnToClear * 8 + j] = 0;
+            }
+        }
+
+        //columns above should fall one column down
+        for (i = 0; i < 4; i++)
+        {
+            for (j = columnToClear * 8; j < 120; j++)
+            {
+                savedGame[i * 128 + j] = savedGame[i * 128 + j + 8]; //move down 8 segments
+            }
+        }
+    }
+
+}
+
+
+void letterSpeedy(Letter myletter, Letter myOtherLetter) //myletter is always enabled, myOtherLetter always disabled
+{
+
+        PORTE = 0xC; //1100
+        delay(8000000);
+
+        draw(myletter, myOtherLetter);
+
+        if (myletter.x - myletter.speedX >= 0)
+        {
+            PORTE = 0x0;
+            delay(8000000);
+            myletter.x = (myletter.x - 16);
+        }
+
+        PORTE = 0xD; //1101
+        delay(2000000);
+
+        draw(myletter, myOtherLetter);
+    
+    PORTE = 0xE;
+    if (isBottomYet(myletter))
+    {
+        PORTE = 0x9; //1001
+        // delay(2000000);
+        saveGame();
+        clearScreenRow();
+
+        myletter.x = 80;
+        myletter.y =  16;
+        myletter.enabled = 0;
+        myOtherLetter.enabled = 1;
+
+        PORTE = 0xB; //1011
+        // delay(2000000);
+    }
+}
+
+
+
+
+// void clearScreenRow()
+// {
+//     int i, j, col, columnToClear; // total 15 columns, except the highist one
+//     bool fullColumn = 0;
+
+//     for (col = 0; col < 15; col++) //check columns
+//     {
+//         for (i = 0; i < 4; i++) //check pages
+//         {
+//             for(j = 0; j < 8; j++) //check segments
+//             {
+//                 if (savedGame[i * 128 + col * 8 + j] != 0xFF) //not lighten
+//                 {
+//                     fullColumn = 0;
+//                     break;
+//                 } else {fullColumn = 1;}
+//             }
+//         }
+//         //all segments and pages and filled with 1.
+//         if (fullColumn = 1)
+//         {
+//         columnToClear = col;
+//         break;
+//         }
+//         // else check other columns
+//     }
+
+//     if (fullColumn)
+//     {
+//         //clear the column
+//         for (i = 0; i < 4; i++) //check pages
+//         {
+//             for(j = 0; j < 8; j++) //check segments
+//             {
+//                 savedGame[i * 128 + columnToClear * 8 + j] = 0;
+//             }
+//         }
+
+//         //columns above should fall one column down
+//         for (i = 0; i < 4; i++)
+//         {
+//             for (j = columnToClear * 8; j < 120; j++)
+//             {
+//                 savedGame[i * 128 + j] = savedGame[i * 128 + j + 8]; //move down 8 segments
+//             }
+//         }
+//     }
+
+// }
+
+
+
+
+
 
 /*
  * Starting screen

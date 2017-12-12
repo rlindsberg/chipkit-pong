@@ -14,6 +14,7 @@ void drawBall(Ball b);
 
 void drawLetterO(Letter myletter);
 void drawLetterI(Letter myletter);
+void letterSpeedy(Letter myletter, Letter myOtherLetter);
 
 void clearGame();
 void saveGame();
