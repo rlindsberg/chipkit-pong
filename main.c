@@ -119,86 +119,27 @@ void inGame() {
         PORTE = 0xB; //1011
     }
 
+        PORTE = 0xA;
+        delay(500000);
+        draw(letterO, letterI);
+        delay(500000);
+
     //BTN4 pressed, speedy down
     if (getbtns() & 4) //0100, BTN4 pressed
     {
+        
+        delay(500000);
+        draw(letterO, letterI);        
         if (letterO.enabled)
         {
-            
-        PORTE = 0xC; //1100
-        delay(500000);
+            letterO = dropFastly(letterO, letterI);
+            draw(letterO, letterI);
+            PORTE = 0xAA;
+            delay(500000);
 
-        draw(letterO, letterI);
-
-        if (letterO.x - letterO.speedX >= 0)
+        } else if (letterI.enabled)
         {
-            PORTE = 0x0;
-            delay(500000);
-            letterO.x = (letterO.x - 24);
-        }
-
-        PORTE = 0xD; //1101
-        delay(500000);
-
-        draw(letterO, letterI);
-    
-        PORTE = 0xE;
-    if (isBottomYet(letterO))
-    {
-        PORTE = 0x9; //1001
-        delay(500000);
-        saveGame();
-        clearScreenRow();
-
-        letterO.x = 80;
-        letterO.y =  16;
-        letterO.enabled = 0;
-        letterI.enabled = 1;
-
-        PORTE = 0xB; //1011
-        delay(500000);
-    }
-
-        
-        } else {
-
-
-
-            PORTE = 0xC; //1100
-            delay(500000);
-
-            draw(letterI, letterO);
-
-            if (letterI.x - letterI.speedX >= 0)
-            {
-                PORTE = 0x0;
-                delay(500000);
-                letterI.x = (letterI.x - 16);
-            }
-
-            PORTE = 0xD; //1101
-            delay(500000);
-
-            draw(letterI, letterO);
-        
-            PORTE = 0xE;
-            if (isBottomYet(letterI))
-            {
-                PORTE = 0x9; //1001
-                delay(500000);
-                saveGame();
-                clearScreenRow();
-
-                letterI.x = 80;
-                letterI.y =  16;
-                letterI.enabled = 0;
-                letterO.enabled = 1;
-
-                PORTE = 0xB; //1011
-                delay(500000);
-             }
-
-
+            letterI = dropFastly(letterI, letterO);
         }
     }
 
