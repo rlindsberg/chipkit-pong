@@ -14,7 +14,7 @@ void lightUpPixel(int x, int y);
 void drawLetterO(Letter myletter);
 void drawLetterI(Letter myletter);
 Letter dropFastly(Letter myletter, Letter myOtherLetter);
-
+int clearScreenRow(int gameSpeed);
 void clearGame();
 void saveGame();
 int  isGameOver(Letter myletter, Letter myOtherLetter);

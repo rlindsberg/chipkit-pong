@@ -4,14 +4,14 @@
 #include "assets.h"
 #include "display.h"
 
-#define GAME_SPEED          800
 #define CONTROLLER_SPEED    40
 
 #define STATE_GAMESTART    0
 #define STATE_GAMEOVER      1
 
 int gameState = STATE_GAMESTART;
-
+int gameSpeed = 650;
+int delayMain = 500000;
 
 Letter letterO;
 Letter letterI;
@@ -24,13 +24,13 @@ void inGame() {
     if (letterO.enabled == 1)
     {
         PORTE = 0x20;
-        delay(500000);
+        delay(delayMain);
     }
 
     if (letterI.enabled == 1)
     {
         // PORTE = 0xAA;
-        delay(500000);
+        delay(delayMain);
     }
 
 
@@ -58,7 +58,7 @@ void inGame() {
         }
 
         PORTE = 0x8;
-        delay(500000);
+        delay(delayMain);
         draw(letterO, letterI);
 
     //Letter I
@@ -86,7 +86,7 @@ void inGame() {
         }
 
         PORTE = 0x8; //1000
-        delay(500000);
+        delay(delayMain);
         draw(letterO, letterI);
 
     }
@@ -96,7 +96,12 @@ void inGame() {
     {
         PORTE = 0x9; //1001
         saveGame();
-        clearScreenRow();
+        gameSpeed = clearScreenRow(gameSpeed);
+        //change game speed
+        if (delayMain >= 0)
+        {
+            delayMain = delayMain - 1000000;
+        }
 
         letterO.x = 80;
         letterO.y =  16;
@@ -109,7 +114,12 @@ void inGame() {
     {
         PORTE = 0x9; //1001
         saveGame();
-        clearScreenRow();
+        gameSpeed = clearScreenRow(gameSpeed);
+        //change game speed
+        if (delayMain >= 0)
+        {
+            delayMain = delayMain - 1000000;
+        }
 
         letterI.x = 80;
         letterI.y =  16;
@@ -120,22 +130,22 @@ void inGame() {
     }
 
         PORTE = 0xA;
-        delay(500000);
+        delay(delayMain);
         draw(letterO, letterI);
-        delay(500000);
+        delay(delayMain);
 
     //BTN4 pressed, speedy down
     if (getbtns() & 4) //0100, BTN4 pressed
     {
         
-        delay(500000);
+        delay(delayMain);
         draw(letterO, letterI);        
         if (letterO.enabled)
         {
             letterO = dropFastly(letterO, letterI);
             draw(letterO, letterI);
             PORTE = 0xAA;
-            delay(500000);
+            delay(delayMain);
 
         } else if (letterI.enabled)
         {
@@ -186,7 +196,7 @@ int main(void) {
     return 0;
 }
 
-int counter = GAME_SPEED;
+int counter = 800;
 
 
 int getbtns(void)
@@ -206,7 +216,7 @@ void timer2_interrupt_handler(void) {
     counter--;
 
     if (counter != 0) { return; }
-    counter = GAME_SPEED;
+    counter = gameSpeed;
    
     switch (gameState) {
 
@@ -214,23 +224,23 @@ void timer2_interrupt_handler(void) {
             //draw new letter
 
             PORTE = 0x1;
-            delay(500000);
+            delay(delayMain);
 
             ////check letter status
             if (letterO.enabled == 1)
             {
                 PORTE = 0x20; //0010 0000
-                delay(500000);
+                delay(delayMain);
             }
             if (letterI.enabled == 1)
             {
                 PORTE = 0x10; //0001 0000
-                delay(500000);
+                delay(delayMain);
             }
             ////end
 
             PORTE = 0x2;
-            delay(500000);
+            delay(delayMain);
             draw(letterO, letterI);
 
 
@@ -238,17 +248,17 @@ void timer2_interrupt_handler(void) {
             if (letterO.enabled == 1)
             {
                 PORTE = 0x20; //0010 0000
-                delay(500000);
+                delay(delayMain);
             }
             if (letterI.enabled == 1)
             {
                 PORTE = 0x10; //0001 0000
-                delay(500000);
+                delay(delayMain);
             }
             ////end
 
             PORTE = 0x7;
-            delay(500000);
+            delay(delayMain);
             inGame();
 
 
