@@ -3,14 +3,14 @@
 #include "helpers.h"
 #include "assets.h"
 #include "display.h"
-#include "sound.h"
-#include "freqmap.h"
+// #include "sound.h"
+// #include "freqmap.h"
 
 #define GAME_SPEED          800
-#define GAME_WIN_SCORE      3
-#define MAX_X               128
-#define MAX_Y               32
-#define PADDLE_HEIGHT       8
+// #define GAME_WIN_SCORE      3 //uless
+// #define MAX_X               128 //uless
+// #define MAX_Y               32 //uless
+// #define PADDLE_HEIGHT       8 //uless
 #define CONTROLLER_SPEED    40
 
 #define STATE_START     0
@@ -18,12 +18,12 @@
 #define STATE_END       2
 #define STATE_MENU      3
 
-#define MENU_MULTI      1
-#define MENU_CPUBAS     0
-#define MENU_CPUADV     2
+// #define MENU_MULTI      1 //uless
+// #define MENU_CPUBAS     0 //uless
+// #define MENU_CPUADV     2 //uless
 
 int gameState = STATE_PONG;
-int menuState = MENU_MULTI;
+// int menuState = MENU_MULTI;
 
 Letter letterO;
 Letter letterI;
@@ -36,13 +36,13 @@ void advance() {
     if (letterO.enabled == 1)
     {
         PORTE = 0x20;
-        delay(2000000);
+        delay(500000);
     }
 
     if (letterI.enabled == 1)
     {
         // PORTE = 0xAA;
-        delay(2000000);
+        delay(500000);
     }
 
 
@@ -71,7 +71,7 @@ void advance() {
         }
 
         PORTE = 0x8;
-        delay(2000000);
+        delay(500000);
         draw(letterO, letterI);
 
     //Letter I
@@ -99,7 +99,7 @@ void advance() {
         }
 
         PORTE = 0x8; //1000
-        delay(2000000);
+        delay(500000);
         draw(letterO, letterI);
 
     }
@@ -137,8 +137,88 @@ void advance() {
     {
         if (letterO.enabled)
         {
-            letterSpeedy(letterO, letterI);
-        } else {letterSpeedy(letterI, letterO);}
+            
+        PORTE = 0xC; //1100
+        delay(500000);
+
+        draw(letterO, letterI);
+
+        if (letterO.x - letterO.speedX >= 0)
+        {
+            PORTE = 0x0;
+            delay(500000);
+            letterO.x = (letterO.x - 24);
+        }
+
+        PORTE = 0xD; //1101
+        delay(500000);
+
+        draw(letterO, letterI);
+    
+        PORTE = 0xE;
+    if (isBottomYet(letterO))
+    {
+        PORTE = 0x9; //1001
+        delay(500000);
+        saveGame();
+        clearScreenRow();
+
+        letterO.x = 80;
+        letterO.y =  16;
+        letterO.enabled = 0;
+        letterI.enabled = 1;
+
+        PORTE = 0xB; //1011
+        delay(500000);
+    }
+
+
+
+
+
+
+
+        
+        } else {
+
+
+
+            PORTE = 0xC; //1100
+            delay(500000);
+
+            draw(letterI, letterO);
+
+            if (letterI.x - letterI.speedX >= 0)
+            {
+                PORTE = 0x0;
+                delay(500000);
+                letterI.x = (letterI.x - 16);
+            }
+
+            PORTE = 0xD; //1101
+            delay(500000);
+
+            draw(letterI, letterO);
+        
+            PORTE = 0xE;
+            if (isBottomYet(letterI))
+            {
+                PORTE = 0x9; //1001
+                delay(500000);
+                saveGame();
+                clearScreenRow();
+
+                letterI.x = 80;
+                letterI.y =  16;
+                letterI.enabled = 0;
+                letterO.enabled = 1;
+
+                PORTE = 0xB; //1011
+                delay(500000);
+             }
+
+
+        }
     }
 
 
@@ -157,7 +237,7 @@ void init_game() {
 
     letterI.x = 80;
     letterI.y = 8;
-    letterI.width = 16;
+    letterI.width = 24;
     letterI.speedX = 8;
     letterI.speedY = 8;
     letterI.enabled = 0;
@@ -165,23 +245,23 @@ void init_game() {
 
 int tuneCount = 1;
 int tuneScale = 0;
-/*
- * Plays a single note. Call repetitively for
- * music sequences.
- */
-void playTune(int tune[], int tempo, int toneVolume) {
-    tone(tune[tuneCount], toneVolume);
+// /*
+//  * Plays a single note. Call repetitively for
+//  * music sequences.
+//  */
+// void playTune(int tune[], int tempo, int toneVolume) {
+//     tone(tune[tuneCount], toneVolume);
     
-    if (tune[tuneCount] == 0) {
-        tuneScale = tempo - 1;
-    }
+//     if (tune[tuneCount] == 0) {
+//         tuneScale = tempo - 1;
+//     }
     
-    tuneScale++;
-    if (tuneScale == tempo) {
-        tuneScale = 0;
-        tuneCount = (tuneCount + 1) % tune[0];
-    }
-}
+//     tuneScale++;
+//     if (tuneScale == tempo) {
+//         tuneScale = 0;
+//         tuneCount = (tuneCount + 1) % tune[0];
+//     }
+// }
 
 /*
  * Initialise
@@ -196,8 +276,6 @@ int main(void) {
     // setup hardware
     enableButtons();
     enableTimer2(31250, 0x1B, 0x111, 1);
-    enableTimer3PWM();
-    setupPotentiometers();
 
     enableMultiVectorMode();
     enable_interrupt();
@@ -208,15 +286,21 @@ int main(void) {
 
 int counter = GAME_SPEED;
 
-/**
- * Linear mapping from [0,1023] to valid paddle position
- */
-int translateToScreen(int val) {
-    return val > 0 ? ((MAX_Y - PADDLE_HEIGHT) * val) / 1024 : 0;
-}
+// /**
+//  * Linear mapping from [0,1023] to valid paddle position
+//  */
+// int translateToScreen(int val) {
+//     return val > 0 ? ((MAX_Y - PADDLE_HEIGHT) * val) / 1024 : 0;
+// }
 
-// void updatePaddles() {
-//     int ADCValueP1, ADCValueP2;
+
+
+// /**
+//  * Maps the master potentiometer position to
+//  * to one of the three menu items
+//  */
+// void updateMenu() {
+//     int ADCValueP1;
 
 //     // start sampling and wait to complete
 //     IFSCLR(1) = 0x0002;
@@ -226,109 +310,16 @@ int translateToScreen(int val) {
 //     // check which buffer to read from
 //     if (AD1CON2 & 0x0080) {
 //         ADCValueP1 = ADC1BUF0;
-//         ADCValueP2 = ADC1BUF1;
 //     } else {
 //         ADCValueP1 = ADC1BUF8;
-//         ADCValueP2 = ADC1BUF9;
 //     }
 
-//     p1.y = translateToScreen(ADCValueP1);
-//     if (menuState == MENU_MULTI) {
-//         p2.y = translateToScreen(ADCValueP2);
-//     }
+//     menuState = ((3 * ADCValueP1) / 1024);
 // }
 
-/**
- * Increases (BTN3) or decreases (BTN2) music volume
- */
-// void updateVolume() {
-//     if (isButtonPressed(3) && (volume + 100 <= 800)) {
-//         volume += 100;
-//     } else if (isButtonPressed(2) && (volume - 100 >= 2)) {
-//         volume -= 100;
-//     }
-// }
+// int direction = 0;
+// int targetCoord = 0;
 
-// /**
-//  * Resets music 
-//  */
-// void resetMusic() {
-//     tuneCount = 1;
-//     mute();
-// }
-
-/**
- * Maps the master potentiometer position to
- * to one of the three menu items
- */
-void updateMenu() {
-    int ADCValueP1;
-
-    // start sampling and wait to complete
-    IFSCLR(1) = 0x0002;
-    AD1CON1SET = 0x0004;
-    while (!IFS(1) & 0x0002);
-    
-    // check which buffer to read from
-    if (AD1CON2 & 0x0080) {
-        ADCValueP1 = ADC1BUF0;
-    } else {
-        ADCValueP1 = ADC1BUF8;
-    }
-
-    menuState = ((3 * ADCValueP1) / 1024);
-}
-
-int direction = 0;
-int targetCoord = 0;
-/**
- *  Generate a CPU player at two levels: basic and advanced (always correct)
- */
-// void updateCpuPlayer() {
-//     int offset, side, estimate, max;
-//     max = MAX_Y - PADDLE_HEIGHT;
-//     switch(menuState) {
-//         case MENU_CPUBAS:
-//             if (ball.y == 0) {
-//                 direction = 1;
-//             } else if (ball.y == MAX_Y - 1) {
-//                 direction = -1;
-//             }
-
-//             if (direction == 1 && p2.y < 23 && ball.x > 100) {
-//                 p2.y++;
-//             } else if (direction == -1 && p2.y > 0 && ball.x > 100) {
-//                 p2.y--;
-//             }
-//             break;
-
-//         case MENU_CPUADV:
-//             if (ball.x == 63 && ball.speedX > 0) {
-//                 targetCoord = MAX_Y - 1 - ball.y;
-//             } else if (ball.x == 64 && ball.speedX > 0) {
-//                 targetCoord = MAX_Y - 1 - (ball.y - (direction));
-//             }
-            
-//             if (p2.y < 23 && p2.y + 4 < targetCoord) {
-//                 p2.y++;
-//             } else if (p2.y > 0 && p2.y + 4 > targetCoord) {
-//                 p2.y--;
-//             }
-//             break;
-//         default:
-//             // predict y position
-//             offset = ball.y - (ball.speedX / ball.speedY) * ball.x;
-//             side = ball.speedX > 0 ? MAX_X : 0;
-//             estimate = (ball.speedX / ball.speedY) * side + offset;
-
-//             // move paddle
-//             if (estimate > ball.y && p2.y < max) {
-//                 p2.y++;
-//             }else if (estimate < ball.y && p2.y > 0) {
-//                 p2.y--;
-//             }
-//     }
-// }
 
 
 int getbtns(void)
@@ -368,11 +359,6 @@ void timer2_interrupt_handler(void) {
 
 
         case STATE_PONG:
-
-
-
-            
-
             // // cpu player movement
             // if (menuState == MENU_CPUBAS || menuState == MENU_CPUADV) {
             //     updateCpuPlayer();
@@ -388,23 +374,23 @@ void timer2_interrupt_handler(void) {
             //draw new letter
 
             PORTE = 0x1;
-            delay(2000000);
+            delay(500000);
 
             ////check letter status
             if (letterO.enabled == 1)
             {
                 PORTE = 0x20; //0010 0000
-                delay(2000000);
+                delay(500000);
             }
             if (letterI.enabled == 1)
             {
                 PORTE = 0x10; //0001 0000
-                delay(2000000);
+                delay(500000);
             }
             ////
 
             PORTE = 0x2;
-            delay(2000000);
+            delay(500000);
             draw(letterO, letterI);
 
 
@@ -412,17 +398,17 @@ void timer2_interrupt_handler(void) {
             if (letterO.enabled == 1)
             {
                 PORTE = 0x20; //0010 0000
-                delay(2000000);
+                delay(500000);
             }
             if (letterI.enabled == 1)
             {
                 PORTE = 0x10; //0001 0000
-                delay(2000000);
+                delay(500000);
             }
             ////
 
             PORTE = 0x7;
-            delay(2000000);
+            delay(500000);
             advance();
 
             // letterI.enabled = 1;
@@ -442,7 +428,7 @@ void timer2_interrupt_handler(void) {
 
 
 
-
+            PORTE = 0xf;
             // game end?
             // if (p1.score >= GAME_WIN_SCORE || p2.score >= GAME_WIN_SCORE) {
             //     gameState = STATE_END;

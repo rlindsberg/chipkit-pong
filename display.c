@@ -19,7 +19,7 @@
 #define DISPLAY_RESET_PORT PORTG
 #define DISPLAY_RESET_MASK 0x200
 
-#define PADDLE_HEIGHT   8
+
 uint8_t game[128*4] = {0};
 uint8_t savedGame[128*4] = {0};
 
@@ -132,7 +132,7 @@ void drawLetterO(Letter l){
     int i;
     for (i = 0; i < sizeof(game); i++) { game[i] = savedGame[i]; }
     PORTE = 0x4; //0100
-    delay(2000000);
+    delay(500000);
 
 
     for (i = 0; i < l.width; i++)
@@ -147,14 +147,14 @@ void drawLetterO(Letter l){
     lightUpPixel(l.x+i, l.y+7);
     }
     PORTE = 0x05;
-    delay(2000000);
+    delay(500000);
 }
 
 void drawLetterI(Letter l){
     int i;
     for (i = 0; i < sizeof(game); i++) { game[i] = savedGame[i]; }
     PORTE = 0x4; //0100
-    delay(2000000);
+    delay(500000);
 
     for (i = 0; i < l.width; i++)
     {
@@ -167,25 +167,20 @@ void drawLetterI(Letter l){
     lightUpPixel(l.x+6, l.y+i);
     lightUpPixel(l.x+7, l.y+i);
     }
-    PORTE = 0x05;
-    delay(2000000);
-}
 
-/*
- * Draw paddle
- */
-void drawPaddle(Paddle p) {
-    int i;
-    for (i = 0; i < PADDLE_HEIGHT; i++) {
-        lightUpPixel(p.x, p.y + i);
+    for (i = 0; i < 8; i++)
+    {
+    lightUpPixel(l.x+8, l.y+i+8);
+    lightUpPixel(l.x+1+8, l.y+i+8);
+    lightUpPixel(l.x+2+8, l.y+i+8);
+    lightUpPixel(l.x+3+8, l.y+i+8);
+    lightUpPixel(l.x+4+8, l.y+i+8);
+    lightUpPixel(l.x+5+8, l.y+i+8);
+    lightUpPixel(l.x+6+8, l.y+i+8);
+    lightUpPixel(l.x+7+8, l.y+i+8);
     }
-}
-
-/*
- * Draw ball
- */
-void drawBall(Ball b) {
-    lightUpPixel(b.x, b.y);
+    PORTE = 0x05;
+    delay(500000);
 }
 
 /*
@@ -203,63 +198,48 @@ void saveGame(){
     PORTE = 0xA; //1010
 }
 
-/*
- * Print current score
- */
-void drawScore(Paddle p1, Paddle p2) {
-    int i, x = 52;
-    p1.score = p1.score % 128;
-    p2.score = p2.score % 128;
-    char c = p1.score + '0';
+// /*
+//  * Print current score
+//  */
+// void drawScore(Paddle p1, Paddle p2) {
+//     int i, x = 52;
+//     p1.score = p1.score % 128;
+//     p2.score = p2.score % 128;
+//     char c = p1.score + '0';
 
-    for (i = 0; i < 8; i++) {
-        game[x + i] = font[c * 8 + i];
-    }
+//     for (i = 0; i < 8; i++) {
+//         game[x + i] = font[c * 8 + i];
+//     }
 
-    x = 60;
-    c = ':';
-    for (i = 0; i < 8; i++) {
-        game[x + i] = font[c * 8 + i];
-    }
+//     x = 60;
+//     c = ':';
+//     for (i = 0; i < 8; i++) {
+//         game[x + i] = font[c * 8 + i];
+//     }
 
-    x = 68;
-    c = p2.score + '0';
-    for (i = 0; i < 8; i++) {
-        game[x + i] = font[c * 8 + i];
-    }
-}
-
-/*
- * Print who won
- */
-void drawWinner(Paddle p1, Paddle p2) {
-    int winner = p1.score > p2.score ? 1 : 2;
-    int i, c, x = 64;
-    char sequence[] = {'P', 'l', 'a', 'y', 'e', 'r', ' ', winner + '0', '!'};
-    int offset = 3 * 128;
-
-    for (c = 0; c < sizeof(sequence); c++) {
-        for (i = 0; i < 8; i++) {
-            game[offset + x + c * 8 + i] = font[sequence[c] * 8 + i];
-        }
-    }
-}
+//     x = 68;
+//     c = p2.score + '0';
+//     for (i = 0; i < 8; i++) {
+//         game[x + i] = font[c * 8 + i];
+//     }
+// }
 
 /*
- * Print who won inverted
+ * Print high score
  */
-void drawWinnerInverted(Paddle p1, Paddle p2) {
-    int winner = p1.score > p2.score ? 1 : 2;
-    int i, c, x = 64;
-    char sequence[] = {'P', 'l', 'a', 'y', 'e', 'r', ' ', winner + '0', '!'};
-    int offset = 3 * 128;
+// void drawHighScore() {
+//     int winner = p1.score > p2.score ? 1 : 2;
+//     int i, c, x = 64;
+//     char sequence[] = {'P', 'l', 'a', 'y', 'e', 'r', ' ', winner + '0', '!'};
+//     int offset = 3 * 128;
 
-    for (c = 0; c < sizeof(sequence); c++) {
-        for (i = 0; i < 8; i++) {
-            game[offset + x + c * 8 + i] = ~font[sequence[c] * 8 + i];
-        }
-    }
-}
+//     for (c = 0; c < sizeof(sequence); c++) {
+//         for (i = 0; i < 8; i++) {
+//             game[offset + x + c * 8 + i] = font[sequence[c] * 8 + i];
+//         }
+//     }
+// }
+
 
 /**
  * Renders the full screen
@@ -283,42 +263,14 @@ void renderScreen(uint8_t arr[]) {
 }
 
 /*
- * Print the menu
- */
-void renderMenu(int selected) {
-    clearGame();
-    int offset = (((128 / 8) - menuLength) / 2) * 8;
-
-    int i, j, f;
-    for (i = 0; i < 3; i++) {
-        for (j = 0; j < menuLength; j++) {
-            for (f = 0; f < 8; f++) {
-                if (selected == i && menu[i][j] != ' ') {
-                    game[offset + i * 128 + j * 8 + f] = ~font[menu[i][j] * 8 + f];
-                }else {
-                    game[offset + i * 128 + j * 8 + f] = font[menu[i][j] * 8 + f];
-                }
-            }
-        }
-    }
-
-    renderScreen(game);
-}
-
-/*
  * Send the next frame to the display
  */
 void draw(Letter myletterO, Letter myletterI) {
     int i, j;
 
     clearGame();
-    // drawPaddle(p1);
-    // drawPaddle(p2);
-    // drawBall(ball);
-    // drawScore(p1, p2);
-
     PORTE = 0x3;
-    delay(2000000);
+    delay(500000);
 
     if (myletterO.enabled)
     {
@@ -330,7 +282,7 @@ void draw(Letter myletterO, Letter myletterI) {
 
     renderScreen(game);
     PORTE = 0x6;
-    delay(2000000);
+    delay(500000);
 }
 
 bool isBottomYet(Letter myletter){
@@ -420,121 +372,25 @@ void clearScreenRow()
 }
 
 
-void letterSpeedy(Letter myletter, Letter myOtherLetter) //myletter is always enabled, myOtherLetter always disabled
-{
-
-        PORTE = 0xC; //1100
-        delay(8000000);
-
-        draw(myletter, myOtherLetter);
-
-        if (myletter.x - myletter.speedX >= 0)
-        {
-            PORTE = 0x0;
-            delay(8000000);
-            myletter.x = (myletter.x - 16);
-        }
-
-        PORTE = 0xD; //1101
-        delay(2000000);
-
-        draw(myletter, myOtherLetter);
-    
-    PORTE = 0xE;
-    if (isBottomYet(myletter))
-    {
-        PORTE = 0x9; //1001
-        // delay(2000000);
-        saveGame();
-        clearScreenRow();
-
-        myletter.x = 80;
-        myletter.y =  16;
-        myletter.enabled = 0;
-        myOtherLetter.enabled = 1;
-
-        PORTE = 0xB; //1011
-        // delay(2000000);
-    }
-}
-
-
-
-
-// void clearScreenRow()
-// {
-//     int i, j, col, columnToClear; // total 15 columns, except the highist one
-//     bool fullColumn = 0;
-
-//     for (col = 0; col < 15; col++) //check columns
-//     {
-//         for (i = 0; i < 4; i++) //check pages
-//         {
-//             for(j = 0; j < 8; j++) //check segments
-//             {
-//                 if (savedGame[i * 128 + col * 8 + j] != 0xFF) //not lighten
-//                 {
-//                     fullColumn = 0;
-//                     break;
-//                 } else {fullColumn = 1;}
-//             }
-//         }
-//         //all segments and pages and filled with 1.
-//         if (fullColumn = 1)
-//         {
-//         columnToClear = col;
-//         break;
-//         }
-//         // else check other columns
-//     }
-
-//     if (fullColumn)
-//     {
-//         //clear the column
-//         for (i = 0; i < 4; i++) //check pages
-//         {
-//             for(j = 0; j < 8; j++) //check segments
-//             {
-//                 savedGame[i * 128 + columnToClear * 8 + j] = 0;
-//             }
-//         }
-
-//         //columns above should fall one column down
-//         for (i = 0; i < 4; i++)
-//         {
-//             for (j = columnToClear * 8; j < 120; j++)
-//             {
-//                 savedGame[i * 128 + j] = savedGame[i * 128 + j + 8]; //move down 8 segments
-//             }
-//         }
-//     }
-
+// /*
+//  * Starting screen
+//  */
+// void drawLogo() {
+//     renderScreen(logo);
 // }
-
-
-
-
-
-
-/*
- * Starting screen
- */
-void drawLogo() {
-    renderScreen(logo);
-}
 
 /*
  * Ending Screen
  */
-void drawEnding(Paddle p1, Paddle p2) {
-    clearGame();
-    int i;
-    for (i = 0; i < sizeof(game); i++) {
-        game[i] = minion[i];
-    }
+// void drawEnding(Paddle p1, Paddle p2) {
+//     clearGame();
+//     int i;
+//     for (i = 0; i < sizeof(game); i++) {
+//         game[i] = minion[i];
+//     }
     
-    drawWinnerInverted(p1, p2);
-    renderScreen(game);
-}
+//     drawWinnerInverted(p1, p2);
+//     renderScreen(game);
+// }
 
 

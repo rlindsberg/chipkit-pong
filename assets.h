@@ -9,11 +9,5 @@ extern uint8_t minion[];
 extern const uint8_t const menu[3][13];
 extern const short const menuLength;
 
-extern int tetris[];
-extern int starWars[];
-extern int FF7prelude[];
-extern int FF7fanfare[];
-extern int FF7battle[];
-extern int symphony[];
 
 #endif // FONT_H_
