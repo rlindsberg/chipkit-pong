@@ -1,4 +1,4 @@
-#ifndef FONT_H_
+#ifndef FONT_H_   /* Include guard */
 #define FONT_H_
 
 #include <stdint.h>
