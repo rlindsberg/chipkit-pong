@@ -1,7 +1,9 @@
 #include "assets.h"
 #include <stdint.h>
 
+//textbuffer for display a string on the screen
 char textbuffer[4][16];
+
 const uint8_t const font[] = {
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
