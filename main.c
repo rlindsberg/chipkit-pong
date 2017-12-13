@@ -199,7 +199,6 @@ int main(void) {
     enableMultiVectorMode();
     enable_interrupt();
 
-    for(;;) ;
     return 0;
 }
 
@@ -292,13 +291,3 @@ void timer2_interrupt_handler(void) {
             break;
     }
 }
-
-/**
- * ISR Interrupt handler for timer 3
- */
-void timer3_interrupt_handler(void) {}
-
-/**
- * ISR general interrupt handler
- */
-void core_interrupt_handler(void) {}
