@@ -9,9 +9,12 @@
 #define STATE_GAMESTART    0
 #define STATE_GAMEOVER      1
 
-int gameState = STATE_GAMESTART;
+int gameState = STATE_GAMEOVER;
 int gameSpeed = 650;
-int delayMain = 500000;
+int delayMain = 100000;
+int score = 0;
+
+
 
 Letter letterO;
 Letter letterI;
@@ -97,6 +100,8 @@ void inGame() {
         PORTE = 0x9; //1001
         saveGame();
         gameSpeed = clearScreenRow(gameSpeed);
+        //score!
+        score += 100;
         //change game speed
         if (delayMain >= 0)
         {
@@ -115,6 +120,8 @@ void inGame() {
         PORTE = 0x9; //1001
         saveGame();
         gameSpeed = clearScreenRow(gameSpeed);
+        //score!
+        score += 100;
         //change game speed
         if (delayMain >= 0)
         {
@@ -268,12 +275,20 @@ void timer2_interrupt_handler(void) {
             if (isGameOver(letterO, letterI) == 1) {
                 gameState = STATE_GAMEOVER;
                 PORTE = 0;
-                // drawScore();
             }
             break;
 
 
         case STATE_GAMEOVER:
+            clearGame();
+            renderScreen();
+            display_string( 2, "HIGH SCORE!");
+            display_update();
+            PORTE = 0xAA;
+            delay(200000);
+            PORTE = 0x55; 
+            delay(200000);
+            PORTE = 0;
             break;
     }
 }
