@@ -20,6 +20,34 @@
 #define DISPLAY_RESET_MASK 0x200
 
 
+
+
+#define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)
+#define DISPLAY_CHANGE_TO_DATA_MODE (PORTFSET = 0x10)
+
+#define DISPLAY_ACTIVATE_RESET (PORTGCLR = 0x200)
+#define DISPLAY_DO_NOT_RESET (PORTGSET = 0x200)
+
+#define DISPLAY_ACTIVATE_VDD (PORTFCLR = 0x40)
+#define DISPLAY_ACTIVATE_VBAT (PORTFCLR = 0x20)
+
+#define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
+#define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
+
+/* quicksleep:
+   A simple function to create a small delay.
+   Very inefficient use of computing resources,
+   but very handy in some special cases. */
+void quicksleep(int cyc) {
+    int i;
+    for(i = cyc; i > 0; i--);
+}
+
+
+
+
+
+
 uint8_t game[128*4] = {0};
 uint8_t savedGame[128*4] = {0};
 int delayDisplay = 500000;
@@ -398,6 +426,69 @@ int clearScreenRow(int gameSpeed)
     } else {return gameSpeed;}
 
 }
+
+void display_string(int line, char *s) {
+    int i;
+    if(line < 0 || line >= 4)
+        return;
+    if(!s)
+        return;
+    
+    for(i = 0; i < 16; i++)
+        if(*s) {
+            textbuffer[line][i] = *s;
+            s++;
+        } else
+            textbuffer[line][i] = ' ';
+}
+
+void display_update(void) {
+    int i, j, k;
+    int c;
+    for(i = 0; i < 4; i++) {
+        DISPLAY_CHANGE_TO_COMMAND_MODE;
+        spi_send_recv(0x22);
+        spi_send_recv(i);
+        
+        spi_send_recv(0x0);
+        spi_send_recv(0x10);
+        
+        DISPLAY_CHANGE_TO_DATA_MODE;
+        
+        for(j = 0; j < 16; j++) {
+            c = textbuffer[i][j];
+            if(c & 0x80)
+                continue;
+            
+            for(k = 0; k < 8; k++)
+                spi_send_recv(font[c*8 + k]);
+        }
+    }
+}
+
+
+// char* itoa(int i, char b[]){
+//     char const digit[] = "0123456789";
+//     char* p = b;
+//     if(i<0){
+//         *p++ = '-';
+//         i *= -1;
+//     }
+//     int shifter = i;
+//     do{ //Move to where representation ends
+//         ++p;
+//         shifter = shifter/10;
+//     }while(shifter);
+//     *p = '\0';
+//     do{ //Move back, inserting digits as u go
+//         *--p = digit[i%10];
+//         i = i/10;
+//     }while(i);
+//     return b;
+// }
+
+
+
 
 int isGameOver(Letter myletter, Letter myOtherLetter){
     if (savedGame[326] > 0)
