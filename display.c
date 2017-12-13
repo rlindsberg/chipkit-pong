@@ -215,49 +215,6 @@ void saveGame(){
     PORTE = 0xA; //1010
 }
 
-// /*
-//  * Print current score
-//  */
-// void drawScore(Paddle p1, Paddle p2) {
-//     int i, x = 52;
-//     p1.score = p1.score % 128;
-//     p2.score = p2.score % 128;
-//     char c = p1.score + '0';
-
-//     for (i = 0; i < 8; i++) {
-//         game[x + i] = font[c * 8 + i];
-//     }
-
-//     x = 60;
-//     c = ':';
-//     for (i = 0; i < 8; i++) {
-//         game[x + i] = font[c * 8 + i];
-//     }
-
-//     x = 68;
-//     c = p2.score + '0';
-//     for (i = 0; i < 8; i++) {
-//         game[x + i] = font[c * 8 + i];
-//     }
-// }
-
-/*
- * Print high score
- */
-// void drawHighScore() {
-//     int winner = p1.score > p2.score ? 1 : 2;
-//     int i, c, x = 64;
-//     char sequence[] = {'P', 'l', 'a', 'y', 'e', 'r', ' ', winner + '0', '!'};
-//     int offset = 3 * 128;
-
-//     for (c = 0; c < sizeof(sequence); c++) {
-//         for (i = 0; i < 8; i++) {
-//             game[offset + x + c * 8 + i] = font[sequence[c] * 8 + i];
-//         }
-//     }
-// }
-
-
 /**
  * Renders the full screen
  */
@@ -465,30 +422,6 @@ void display_update(void) {
         }
     }
 }
-
-
-// char* itoa(int i, char b[]){
-//     char const digit[] = "0123456789";
-//     char* p = b;
-//     if(i<0){
-//         *p++ = '-';
-//         i *= -1;
-//     }
-//     int shifter = i;
-//     do{ //Move to where representation ends
-//         ++p;
-//         shifter = shifter/10;
-//     }while(shifter);
-//     *p = '\0';
-//     do{ //Move back, inserting digits as u go
-//         *--p = digit[i%10];
-//         i = i/10;
-//     }while(i);
-//     return b;
-// }
-
-
-
 
 int isGameOver(Letter myletter, Letter myOtherLetter){
     if (savedGame[326] > 0)
