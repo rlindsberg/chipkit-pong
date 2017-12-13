@@ -8,6 +8,15 @@ void delay(int cyc);
 uint8_t spi_send_recv(uint8_t data);
 void spi_init();
 void display_wakeup();
+
+/* Declare text buffer for display output */
+extern char textbuffer[4][16];
+void time2string( char *, int );
+void display_string(int line, char *s);
+void display_update(void);
+// char* itoa(int i, char b[]);
+
+
 void lightUpPixel(int x, int y);
 
 
