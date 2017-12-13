@@ -9,7 +9,7 @@
 #define STATE_GAMESTART    0
 #define STATE_GAMEOVER      1
 
-int gameState = STATE_GAMEOVER;
+int gameState = STATE_GAMESTART;
 int gameSpeed = 650;
 int delayMain = 100000;
 int score = 0;
